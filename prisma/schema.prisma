@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  bookings  Booking[]
+  loyalty   LoyaltyMember?
+}
+
+model Flight {
+  id                          String   @id @default(uuid())
+  flightNumber                String
+  originIata                  String
+  destinationIata             String
+  departureTime               DateTime
+  arrivalTime                 DateTime
+  durationMinutes             Int
+  status                      FlightStatus @default(SCHEDULED)
+  priceMain                   Float
+  priceComfortPlus            Float?
+  priceFirstClass             Float?
+  priceDeltaOne               Float?
+  seatsMainAvailable          Int
+  seatsComfortPlusAvailable   Int
+  seatsFirstClassAvailable    Int
+  seatsDeltaOneAvailable      Int
+  createdAt                   DateTime @default(now())
+  bookings                    Booking[]
+}
+
+model Booking {
+  id                String   @id @default(uuid())
+  bookingReference  String   @unique
+  user              User?    @relation(fields: [userId], references: [id])
+  userId            String?
+  totalPrice        Float
+  currency          String
+  cabinClass        CabinClass
+  tripType          TripType
+  status            BookingStatus @default(PENDING)
+  milesEarned       Int
+  createdAt         DateTime @default(now())
+}
+
+model LoyaltyMember {
+  id            String @id @default(uuid())
+  user          User   @relation(fields: [userId], references: [id])
+  userId        String @unique
+  skymiles      Int    @default(0)
+  eliteStatus   EliteStatus @default(NONE)
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum CabinClass {
+  MAIN
+  COMFORT_PLUS
+  FIRST_CLASS
+  DELTA_ONE
+}
+
+enum TripType {
+  ONE_WAY
+  ROUND_TRIP
+  MULTI_CITY
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  REFUNDED
+}
+
+enum FlightStatus {
+  SCHEDULED
+  BOARDING
+  DEPARTED
+  ARRIVED
+  CANCELLED
+  DELAYED
+}
+
+enum EliteStatus {
+  NONE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
