@@ -37,7 +37,8 @@ model Flight {
   seatsFirstClassAvailable    Int
   seatsDeltaOneAvailable      Int
   createdAt                   DateTime @default(now())
-  bookings                    Booking[]
+  outboundBookings            Booking[] @relation("OutboundBookings")
+  returnBookings              Booking[] @relation("ReturnBookings")
 }
 
 model Booking {
@@ -51,6 +52,10 @@ model Booking {
   tripType          TripType
   status            BookingStatus @default(PENDING)
   milesEarned       Int
+  outboundFlight    Flight?  @relation("OutboundBookings", fields: [outboundFlightId], references: [id])
+  outboundFlightId  String?
+  returnFlight      Flight?  @relation("ReturnBookings", fields: [returnFlightId], references: [id])
+  returnFlightId    String?
   createdAt         DateTime @default(now())
 }
 
