@@ -36,6 +36,7 @@ model Flight {
   seatsComfortPlusAvailable   Int
   seatsFirstClassAvailable    Int
   seatsDeltaOneAvailable      Int
+  reservedSeats               Json?    // Stores reserved seats as {"A1": true, "B2": false}
   createdAt                   DateTime @default(now())
   outboundBookings            Booking[] @relation("OutboundBookings")
   returnBookings              Booking[] @relation("ReturnBookings")
@@ -56,6 +57,9 @@ model Booking {
   outboundFlightId  String?
   returnFlight      Flight?  @relation("ReturnBookings", fields: [returnFlightId], references: [id])
   returnFlightId    String?
+  passengers        Json?
+  seatAssignments   Json?
+  paymentStatus     String?  @default("pending")
   createdAt         DateTime @default(now())
 }
 

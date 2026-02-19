@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   db:
     image: postgres:15
@@ -8,6 +7,12 @@ services:
       POSTGRES_DB: delta_db
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   backend:
     build:
@@ -16,18 +21,32 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "4000:4000"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     environment:
-      - NEXT_PUBLIC_API_BASE=http://localhost:4000
+      - NEXT_PUBLIC_API_URL=http://backend:4000/api
+      - NODE_ENV=production
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   db-data:
