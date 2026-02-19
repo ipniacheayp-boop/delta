@@ -191,3 +191,122 @@ export async function reserveSeat(
     },
   );
 }
+
+// ─────────────────────────────────────────────────────────────
+// Flight Status API
+// ─────────────────────────────────────────────────────────────
+
+export interface FlightStatusResult {
+  id: string;
+  flightNumber: string;
+  originIata: string;
+  destinationIata: string;
+  departureTime: string;
+  arrivalTime: string;
+  status: string;
+}
+
+/** Get flight status by flight number */
+export async function getFlightStatusByNumber(
+  flightNumber: string,
+): Promise<{ flights: FlightStatusResult[] }> {
+  return apiFetch<{ flights: FlightStatusResult[] }>(
+    `/flight-status/flight/${encodeURIComponent(flightNumber)}`,
+  );
+}
+
+/** Get flight status by route */
+export async function getFlightStatusByRoute(
+  origin: string,
+  destination: string,
+  date?: string,
+): Promise<{ flights: FlightStatusResult[] }> {
+  const params = new URLSearchParams({
+    origin,
+    destination,
+  });
+  if (date) {
+    params.set("date", date);
+  }
+  return apiFetch<{ flights: FlightStatusResult[] }>(
+    `/flight-status/route?${params.toString()}`,
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Admin API
+// ─────────────────────────────────────────────────────────────
+
+export interface AdminStats {
+  users: number;
+  flights: number;
+  bookings: number;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+  created_at: string;
+}
+
+export interface AdminBooking {
+  id: string;
+  booking_reference: string;
+  user_id: string;
+  total_price: number;
+  currency: string;
+  cabin_class: string;
+  trip_type: string;
+  status: string;
+  paymentStatus: string;
+  created_at: string;
+  user?: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+/** Get admin statistics */
+export async function getAdminStats(): Promise<AdminStats> {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  return apiFetch<AdminStats>("/admin/stats", {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+}
+
+/** Get all users (admin only) */
+export async function getAllUsers(): Promise<{ users: AdminUser[] }> {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  return apiFetch<{ users: AdminUser[] }>("/admin/users", {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+}
+
+/** Get all bookings (admin only) */
+export async function getAllBookings(): Promise<{ bookings: AdminBooking[] }> {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  return apiFetch<{ bookings: AdminBooking[] }>("/admin/bookings", {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+}
+
+/** Update user role (admin only) */
+export async function updateUserRole(
+  userId: string,
+  role: string,
+): Promise<{ user: AdminUser }> {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  return apiFetch<{ user: AdminUser }>(`/admin/users/${userId}/role`, {
+    method: "PATCH",
+    body: JSON.stringify({ role }),
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+}

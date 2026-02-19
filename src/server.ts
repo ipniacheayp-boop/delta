@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth";
 import flightsRoutes from "./routes/flights";
 import bookingsRoutes from "./routes/bookings";
 import adminRoutes from "./routes/admin";
+import flightStatusRoutes from "./routes/flight-status";
 
 dotenv.config();
 
@@ -57,6 +58,7 @@ app.use(express.json({ limit: "10kb" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/flights", flightsRoutes);
 app.use("/api/bookings", bookingsRoutes);
+app.use("/api/flight-status", flightStatusRoutes);
 // Admin routes (protected internally)
 app.use("/api/admin", adminRoutes);
 
