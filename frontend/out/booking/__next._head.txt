@@ -1,0 +1,5 @@
+1:"$Sreact.fragment"
+2:I[47733,["/_next/static/chunks/0afc7e31f47879d0.js","/_next/static/chunks/30d09df3745cdd9b.js"],"ViewportBoundary"]
+3:I[47733,["/_next/static/chunks/0afc7e31f47879d0.js","/_next/static/chunks/30d09df3745cdd9b.js"],"MetadataBoundary"]
+4:"$Sreact.suspense"
+0:{"buildId":"1-q07B5XKzc0ZcLViy4ns","rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Delta Air Lines - Official Site"}],["$","meta","1",{"name":"description","content":"Book flights, reserve airline tickets and find information on departures, arrivals, flight schedules, Delta destinations and our travel deals."}]]}]}]}],null]}],"loading":null,"isPartial":false}
