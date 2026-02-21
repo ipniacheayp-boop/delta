@@ -115,8 +115,29 @@ export interface Booking {
   cabin_class: string;
   trip_type: string;
   status: string;
+  payment_status?: string;
   miles_earned: number;
   created_at: string;
+  passengers?: unknown;
+  seat_assignments?: unknown;
+}
+
+export function transformBooking(booking: any): Booking {
+  return {
+    id: booking.id,
+    booking_reference: booking.booking_reference ?? booking.bookingReference,
+    user_id: booking.user_id ?? booking.userId,
+    total_price: booking.total_price ?? booking.totalPrice,
+    currency: booking.currency,
+    cabin_class: booking.cabin_class ?? booking.cabinClass,
+    trip_type: booking.trip_type ?? booking.tripType,
+    status: booking.status,
+    payment_status: booking.payment_status ?? booking.paymentStatus,
+    miles_earned: booking.miles_earned ?? booking.milesEarned ?? 0,
+    created_at: booking.created_at ?? booking.createdAt,
+    passengers: booking.passengers,
+    seat_assignments: booking.seat_assignments ?? booking.seatAssignments,
+  };
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -146,35 +167,39 @@ export async function getFlights(): Promise<{ flights: Flight[] }> {
 export async function createBooking(
   params: CreateBookingRequest,
 ): Promise<{ booking: Booking }> {
-  return apiFetch<{ booking: Booking }>("/bookings", {
+  const res = await apiFetch<{ booking: any }>("/bookings", {
     method: "POST",
     body: JSON.stringify(params),
   });
+  return { booking: transformBooking(res.booking) };
 }
 
 /** Get booking by PNR */
 export async function getBookingByPnr(
   pnr: string,
 ): Promise<{ booking: Booking }> {
-  return apiFetch<{ booking: Booking }>(`/bookings/pnr/${pnr}`);
+  const res = await apiFetch<{ booking: any }>(`/bookings/pnr/${pnr}`);
+  return { booking: transformBooking(res.booking) };
 }
 
 /** Cancel a booking */
 export async function cancelBooking(
   bookingId: string,
 ): Promise<{ booking: Booking }> {
-  return apiFetch<{ booking: Booking }>(`/bookings/${bookingId}/cancel`, {
+  const res = await apiFetch<{ booking: any }>(`/bookings/${bookingId}/cancel`, {
     method: "PATCH",
   });
+  return { booking: transformBooking(res.booking) };
 }
 
 /** Pay for a booking (mock) */
 export async function payBooking(
   bookingId: string,
 ): Promise<{ booking: Booking }> {
-  return apiFetch<{ booking: Booking }>(`/bookings/${bookingId}/pay`, {
+  const res = await apiFetch<{ booking: any }>(`/bookings/${bookingId}/pay`, {
     method: "POST",
   });
+  return { booking: transformBooking(res.booking) };
 }
 
 /** Reserve a seat */
@@ -183,13 +208,14 @@ export async function reserveSeat(
   flightId: string,
   seat: string,
 ): Promise<{ ok: boolean; booking: Booking }> {
-  return apiFetch<{ ok: boolean; booking: Booking }>(
+  const res = await apiFetch<{ ok: boolean; booking: any }>(
     `/bookings/${bookingId}/reserve-seat`,
     {
       method: "POST",
       body: JSON.stringify({ flightId, seat }),
     },
   );
+  return { ok: res.ok, booking: transformBooking(res.booking) };
 }
 
 // ─────────────────────────────────────────────────────────────

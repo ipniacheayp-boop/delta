@@ -165,7 +165,7 @@ export default function MyTripsPage() {
       </section>
 
       {/* Booking Details */}
-      {booking && (
+      {booking ? (
         <section className="max-w-4xl mx-auto px-4 py-8">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             {/* Header */}
@@ -203,7 +203,7 @@ export default function MyTripsPage() {
                         Delta Air Lines
                       </div>
                       <div className="text-sm text-slate-500">
-                        {booking.cabin_class} Class
+                        {String(booking.cabin_class)} Class
                       </div>
                     </div>
                   </div>
@@ -223,7 +223,7 @@ export default function MyTripsPage() {
                 <div>
                   <div className="text-sm text-slate-500 mb-1">Trip Type</div>
                   <div className="font-semibold text-slate-800 capitalize">
-                    {booking.trip_type.replace("_", " ")}
+                    {String(booking.trip_type).replace("_", " ")}
                   </div>
                 </div>
                 <div>
@@ -231,7 +231,7 @@ export default function MyTripsPage() {
                     Payment Status
                   </div>
                   <div className="font-semibold text-slate-800 capitalize">
-                    {booking.payment_status}
+                    {String(booking.payment_status ?? "pending")}
                   </div>
                 </div>
                 <div>
@@ -239,44 +239,41 @@ export default function MyTripsPage() {
                     Miles Earned
                   </div>
                   <div className="font-semibold text-slate-800">
-                    {booking.miles_earned.toLocaleString()} miles
+                    {Number(booking.miles_earned ?? 0).toLocaleString()} miles
                   </div>
                 </div>
                 <div>
                   <div className="text-sm text-slate-500 mb-1">Booked On</div>
                   <div className="font-semibold text-slate-800">
-                    {formatDate(booking.created_at)}
+                    {formatDate(String(booking.created_at))}
                   </div>
                 </div>
               </div>
 
               {/* Passengers */}
-              {booking.passengers &&
-                Array.isArray(booking.passengers) &&
-                booking.passengers.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-3">
-                      Passengers
-                    </h3>
-                    <div className="space-y-2">
-                      {(booking.passengers as any[]).map(
-                        (p: any, i: number) => (
-                          <div
-                            key={i}
-                            className="bg-slate-50 p-3 rounded-lg flex justify-between"
-                          >
-                            <span className="text-slate-600">
-                              Passenger {i + 1}
-                            </span>
-                            <span className="font-medium text-slate-800">
-                              {p.firstName} {p.lastName}
-                            </span>
-                          </div>
-                        ),
-                      )}
-                    </div>
+              {Array.isArray(booking.passengers) &&
+              booking.passengers.length > 0 ? (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-3">
+                    Passengers
+                  </h3>
+                  <div className="space-y-2">
+                    {booking.passengers.map((p: any, i: number) => (
+                      <div
+                        key={i}
+                        className="bg-slate-50 p-3 rounded-lg flex justify-between"
+                      >
+                        <span className="text-slate-600">
+                          Passenger {i + 1}
+                        </span>
+                        <span className="font-medium text-slate-800">
+                          {p.firstName} {p.lastName}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              ) : null}
 
               {/* Actions */}
               {booking.status === "CONFIRMED" && (
@@ -315,7 +312,7 @@ export default function MyTripsPage() {
             </Link>
           </div>
         </section>
-      )}
+      ) : null}
 
       {/* Help Section */}
       {!booking && (
